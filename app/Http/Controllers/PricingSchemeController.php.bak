@@ -1,0 +1,430 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use App\Models\PricingScheme;
+use App\Route;
+use Auth;
+use App\Models\Staff;
+
+class PricingSchemeController extends Controller
+{
+    public function __construct()
+    {
+        //create permission
+        $this->middleware('permission:pricing-create')->only(['create','store']);
+        
+        //view permission
+        $this->middleware('permission:pricing-view')->only('show');
+
+        //update permission
+        $this->middleware('permission:pricing-edit')->only(['edit','update']);
+
+        //delete permission
+        $this->middleware('permission:pricing-delete')->only('destroy');
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $user = Auth()->user();
+        if($user->role == 3){
+            $pricing_list = PricingScheme::where("supplier_id",$user->id);
+        }else if($user->role == 2){
+            $staff = Staff::where("user_id",$user->id)->first();
+            $pricing_list = PricingScheme::where("supplier_id",$staff->supplier_id);             
+        }else if($user->role == 1){
+            $pricing_list = PricingScheme::where('id', '>', 0);
+        
+        }else{
+            abort(403,"You don't have permission");
+        }
+
+        $pricing_list = $pricing_list->orderBy("id","DESC")->paginate(10);
+       
+        return view('pages.pricings.index',compact('pricing_list'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        // if(isset($_GET['booking_agent'])){
+            return view('pages.pricings.create');
+        // }else{
+            // abort(403,"You don't have permission");
+        // }        
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validation_array = [
+            'pickup_point' => 'required',
+            'pickup_radius' => 'required',
+            'pricing_name' => 'required',
+            'upto_ten' => 'required',
+            'ten_to_hundred' => 'required',
+            'hundred_to_twoHundred' => 'required',
+            'twoHundred_and_above' =>'required',
+            'price_per_hour' =>'required',
+            'price_per_day' => 'required',
+            'minimum_hours' => 'required',
+            'pickup_fee_per_pickup' => 'required',
+            'waiting_time_per_min' => 'required',
+            'airport_pickup_fee' => 'required',
+            'job_discount' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $validation_array);
+        if ($validator->fails()) { // on validator found any error
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $loginUser = Auth()->user();        
+
+        $pricing = new PricingScheme();
+
+        $pricing->booking_agent_id = null;
+        
+        if($loginUser->role == 3){
+            //for supplier
+            $pricing->supplier_id = $loginUser->id;
+        }
+        elseif($loginUser->role == 2){
+            //for staff
+            $loginStaff = Staff::where("user_id",$loginUser->id)->first();
+            $pricing->supplier_id = $loginStaff->supplier_id;
+        }
+        else{
+            if(isset($_GET['booking_agent']) && $_GET['booking_agent'] != ''){
+                $pricing->booking_agent_id = $_GET['booking_agent'];
+                $pricing->supplier_id = null;
+            }
+            if(isset($_GET['supplier_id']) && $_GET['supplier_id'] != ''){
+                $pricing->supplier_id = $_GET['supplier_id'];
+                $pricing->booking_agent_id = null;
+            }
+        }
+//         $basepoint= $request->pickup_point;  // (basepoint und startradius zu json ?)  neu zu db hinzufügen!!!
+//         $pickup_lat = $request->pickup_latitude;
+//         $pickup_lon = $request->pickup_longitude;
+//         $arr_base = ['base_point' => $basepoint,'pickup_lat' => $pickup_lat,'pickup_long' => $pickup_lon];
+//         $pricing->base_point = json_encode($arr_base);
+        $pricing->base_point = $request->pickup_point;
+        $pricing->start_radius = $request->pickup_radius;  // neu zu db hinzufügen!!!
+        $pricing->title = $request->pricing_name;
+        $pricing->up_to_ten = $request->upto_ten;
+        $pricing->ten_to_hundred = $request->ten_to_hundred;
+        $pricing->hundred_to_twoHundred = $request->hundred_to_twoHundred;
+        $pricing->twoHundred_and_above = $request->twoHundred_and_above;
+        $pricing->price_per_hour = $request->price_per_hour;
+        $pricing->price_per_day = $request->price_per_day;
+        $pricing->minimum_hours = $request->minimum_hours;
+        $pricing->pickup_fee_per_pickup = $request->pickup_fee_per_pickup;
+        $pricing->waiting_time_per_min = $request->waiting_time_per_min;
+        $pricing->airport_pickup_fee = $request->airport_pickup_fee;
+        $pricing->job_discount = $request->job_discount;
+        $pricing->save();
+
+        return back()->with('success', 'Pricing Saved');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $pricing = PricingScheme::findOrFail($id);
+        if($pricing){
+            return view('pages.pricings.edit',compact('pricing'));
+        }
+        else{
+            return back()->with('error', 'Something went wrong');
+        }
+    }
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        // dd($request->all());
+        $validation_array = [
+            'pickup_point' => 'required',
+            'pickup_radius' => 'required',
+            'pricing_name' => 'required',
+            'upto_ten' => 'required',
+            'ten_to_hundred' => 'required',
+            'hundred_to_twoHundred' => 'required',
+            'twoHundred_and_above' =>'required',
+            'price_per_hour' =>'required',
+            'price_per_day' => 'required',
+            'minimum_hours' => 'required',
+            'pickup_fee_per_pickup' => 'required',
+            'waiting_time_per_min' => 'required',
+            'airport_pickup_fee' => 'required',
+            'job_discount' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $validation_array);
+
+        if ($validator->fails()) { // on validator found any error
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $pricing = PricingScheme::findOrFail($id);
+        if($pricing){
+            $loginUser = Auth()->user();
+            if($loginUser->role == 3){
+                //for supplier
+                $pricing->admin_approval = 0;
+            }
+            elseif($loginUser->role == 2){
+                //for staff
+                $pricing->admin_approval = 0;
+            }
+//             $basepoint= $request->pickup_point;  // (basepoint und startradius zu json ?)  neu zu db hinzufügen!!!
+//             $pickup_lat = $request->pickup_latitude;
+//             $pickup_lon = $request->pickup_longitude;
+//             $arr_base = ['base_point' => $basepoint,'pickup_lat' => $pickup_lat,'pickup_long' => $pickup_lon];
+//             $pricing->base_point = json_encode($arr_base);      
+            $pricing->base_point = $request->pickup_point;
+            $pricing->start_radius = $request->pickup_radius;  // neu zu db hinzufügen!!!
+            $pricing->title = $request->pricing_name;
+            $pricing->up_to_ten = $request->upto_ten;
+            $pricing->ten_to_hundred = $request->ten_to_hundred;
+            $pricing->hundred_to_twoHundred = $request->hundred_to_twoHundred;
+            $pricing->twoHundred_and_above = $request->twoHundred_and_above;
+            $pricing->price_per_hour = $request->price_per_hour;
+            $pricing->price_per_day = $request->price_per_day;
+            $pricing->minimum_hours = $request->minimum_hours;
+            $pricing->pickup_fee_per_pickup = $request->pickup_fee_per_pickup;
+            $pricing->waiting_time_per_min = $request->waiting_time_per_min;
+            $pricing->airport_pickup_fee = $request->airport_pickup_fee;
+            $pricing->job_discount = $request->job_discount;
+            $pricing->save();
+            return back()->with('success', 'Pricing Updated');
+        }
+        else{
+            return back()->with('error', 'Something went wrong');
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $pricing = PricingScheme::findOrFail($id);
+        if($pricing){
+            $pricing->delete();
+            return back()->with('success', 'Pricing Deleted');
+        }
+        else{
+            return back()->with('error', 'Something went wrong');
+        }
+    }
+
+    public function getPricingRoutes($id)
+    {
+        $pricing = PricingScheme::findOrFail($id);
+        $pricing_routes = Route::where('pricing_scheme_id',$pricing->id)->paginate(10);
+        return view('pages.pricings.routes',compact('pricing','pricing_routes'));
+    }
+
+    public function createPricingRoute($id)
+    {
+        $pricing_id = $id;
+        return view('pages.pricings.create_route',compact('pricing_id'));
+    }
+
+    public function storePricingRoute(Request $request)
+    {
+        $validation_array = [
+            'pricing_id' => 'required',
+            'pickup_point' => 'required',
+            'pickup_radius' => 'required',
+            'dropoff_point' => 'required',
+            'dropoff_radius' =>'required',
+            'price' =>'required',
+            'distance' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $validation_array);
+
+        if ($validator->fails()) { // on validator found any error
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $pickup_point = $request->pickup_point;
+        $dropoff_point = $request->dropoff_point;
+        $pickup_lat = $request->pickup_latitude;
+        $pickup_lan = $request->pickup_longitude;
+        $dropoff_lat = $request->dropoff_latitude;
+        $dropoff_lan = $request->dropoff_longitude;
+
+        $arr_pickup = ['address' => $pickup_point,'pickup_lat' => $pickup_lat,'pickup_long' => $pickup_lan];
+        $arr_dropoff = ['address' => $dropoff_point,'dropoff_lat' => $dropoff_lat,'dropoff_long' => $dropoff_lan];
+        $arr_pickup = json_encode($arr_pickup);
+        $arr_dropoff = json_encode($arr_dropoff);
+
+        $pricing_id = $request->pricing_id;
+        $route = new Route();
+        $route->pricing_scheme_id = $pricing_id;
+        $route->start_point = $arr_pickup;
+        $route->start_radius = $request->pickup_radius;
+        $route->end_point = $arr_dropoff;
+        $route->end_radius = $request->dropoff_radius;
+        $route->price = $request->price;
+        $route->distance = $request->distance;
+        if($request->valid_for_return){
+            $route->isValidForReturn = 1;
+        }
+        $route->save();
+
+        // return back()->with('success', 'Routing Saved');
+        return redirect(route('pricing.routes',$pricing_id))->with('success', 'Routing Saved');
+    }
+
+    public function editPricingRoute($id)
+    {
+        $route = Route::findOrFail($id);
+        if($route){
+            $start_point_arr = $route->start_point;
+            $end_point_arr = $route->end_point;
+            $start_point = $start_point_arr->address;
+            $end_point = $end_point_arr->address;
+            $pickup_lat = $start_point_arr->pickup_lat;
+            $pickup_long = $start_point_arr->pickup_long;
+            $dropoff_lat = $end_point_arr->dropoff_lat;
+            $dropoff_long = $end_point_arr->dropoff_long;
+            return view('pages.pricings.edit_route',compact('route','start_point','end_point','pickup_lat','pickup_long','dropoff_lat','dropoff_long'));
+        }
+        else{
+            return back()->with('error', 'Something went wrong');
+        }
+    }
+
+    public function updatePricingRoute(Request $request)
+    {
+        // dd($request->all());
+        $validation_array = [
+            'route_id' => 'required',
+            'pickup_point' => 'required',
+            'pickup_radius' => 'required',
+            'dropoff_point' => 'required',
+            'dropoff_radius' =>'required',
+            'price' =>'required',
+            'distance' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $validation_array);
+
+        if ($validator->fails()) { // on validator found any error
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $pickup_point = $request->pickup_point;
+        $dropoff_point = $request->dropoff_point;
+        $pickup_lat = $request->pickup_latitude;
+        $pickup_lan = $request->pickup_longitude;
+        $dropoff_lat = $request->dropoff_latitude;
+        $dropoff_lan = $request->dropoff_longitude;
+
+        $arr_pickup = ['address' => $pickup_point,'pickup_lat' => $pickup_lat,'pickup_long' => $pickup_lan];
+        $arr_dropoff = ['address' => $dropoff_point,'dropoff_lat' => $dropoff_lat,'dropoff_long' => $dropoff_lan];
+        $arr_pickup = json_encode($arr_pickup);
+        $arr_dropoff = json_encode($arr_dropoff);
+
+        $route = Route::findOrFail($request->route_id);
+        if($route){
+            $route->start_point = $arr_pickup;
+            $route->start_radius = $request->pickup_radius;
+            $route->end_point = $arr_dropoff;
+            $route->end_radius = $request->dropoff_radius;
+            $route->price = $request->price;
+            $route->distance = $request->distance;
+            if($request->valid_for_return){
+                $route->isValidForReturn = 1;
+            }
+            $route->save();
+            // return back()->with('success', 'Route Updated');
+            return redirect(route('pricing.routes',$route->pricing_scheme_id))->with('success', 'Route Updated');
+        }
+        else{
+            return back()->with('error', 'Something went wrong');
+        }
+    }
+
+    public function deletePricingRoute($id)
+    {
+        $route = Route::findOrFail($id);
+        if($route){
+            $route->delete();
+            return back()->with('success', 'Route Deleted');
+        }
+        else{
+            return back()->with('error', 'Something went wrong');
+        }
+    }
+    
+    public function approved_and_disapproved($id)
+    {
+        $pricing_scheme = PricingScheme::where('id', $id)->first();
+
+        if ($pricing_scheme) {
+            if ($pricing_scheme->admin_approval == 1) {
+                PricingScheme::where('id', $pricing_scheme->id)->update([
+                    'admin_approval' => 0,
+                ]);
+                $msg = "Price Scheme status goes pending";
+
+            } else {
+                PricingScheme::where('id', $pricing_scheme->id)->update([
+                    'admin_approval' => 1,
+                ]);
+
+                $msg = "Price Scheme is approved";
+            }
+        }else{
+
+            $msg = "Something went wrong";
+        }
+        
+        return back()->with('success',$msg);    
+    }
+}
