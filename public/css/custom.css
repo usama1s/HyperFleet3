@@ -1,0 +1,582 @@
+@import "../fonts/segoeui.css";
+
+
+/* Default css */
+
+*{
+  font-size: 14px;
+  font-family:"Segoe UI Regular";
+}
+
+
+/* overwrite default template style */
+.bg-info{
+
+  background-image: linear-gradient(to right,#008385 0,#00e7eb 100%);
+}
+
+.bg-success{
+  background-image: linear-gradient(to right,#11a578 0,#32eab2 100%);
+}
+
+
+.bg-dark{
+  background-image: linear-gradient(to right top, #363636, #373738, #36383b, #575d66, #525960);
+}
+
+
+.bg-danger{
+  background-image: linear-gradient(to right,#e64d32  0,#ffa8b4 100%);
+}
+
+.bg-warning{
+  background-image: linear-gradient(to right,#ff864a 0,#ffcab0 100%);
+}
+
+.btn-info,.btn-success,.btn-dark,.btn-danger,.bg-warning{
+  outline: none;
+  border: none;
+  border-radius: 0px !important;
+}
+.btn-default{
+  border-radius: 0px !important;
+}
+
+
+.btn-danger:hover, .btn-info:hover{
+  background:#343A40 !important;
+}
+
+.form-control{
+  border-radius: 0px !important;
+  font-size:13.5px;
+}
+
+
+.form-control:focus::placeholder{
+  font-size:9px;
+  position:relative;
+  top:-13px;
+  z-index:1;
+}
+
+textarea.form-control:focus::placeholder{
+  font-size:8px;
+  position:relative;
+  top:-13px;
+  z-index:1;
+}
+
+/* end  overwrite default template style */
+
+th[data-orderable=false]:after,
+th[data-orderable=false]:before{
+  display:none !important;
+}
+table thead{
+  background-color:#343a40;
+  color:#fff;
+}
+
+table thead th{
+  border:none !important;
+  font-weight:normal !important;
+}
+
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting
+{
+  background: none !important;
+} 
+
+/* pagination */
+.pagination{
+  float: right !important;
+}
+.page-link{
+  color: #343A40 !important;
+}
+
+
+.page-item.active .page-link{
+  background: #343A40 !important;
+  border-color: #343A40 !important;
+  color: #fff !important;
+}
+
+#clock {
+  font-family: 'Orbitron', sans-serif;
+  color:#ffffff;
+  font-size: 20px;
+  text-align: center;
+  
+}
+#clock_date{
+  font-family: 'Orbitron', sans-serif;
+  color:#ffffff;
+  text-align: center;
+  font-size: 14px;
+}
+.imgUploader{
+  border:5px solid #e8e8e8;
+  background-color:#ffffff;
+  display:block;
+  position:relative;
+  height:100%;
+  width:100%;
+  border-radius:20%;
+  overflow:hidden;
+}
+.imgUploader:hover{
+   border:5px solid #2ca8ff;
+}
+.imgUploader .imgUploaderImg{
+
+  background-color:#ffffff;
+  background-size:contain;
+  background-position:center center;
+  width:100%;
+  height:100%;
+  display:block;
+  margin:0px auto;
+  text-align:center;
+  object-fit:cover;
+  object-position:center;
+
+}
+
+.imgUploader .imgUploaderinput{
+  width:100%;
+  height:100%;
+  position:absolute;
+  opacity:0;
+  cursor:pointer;
+}
+
+#menu_toggle_btn{
+  margin: 0px;
+  padding: 0px;
+  font-size: 50px;
+  position: relative;
+  width: 100%;
+  text-align: center;
+ 
+}
+#menu_toggle_btn i{
+  position:absolute;
+  padding:0px;
+  margin:0px;
+  font-size: 45px;
+  top:-17px;
+ 
+} 
+
+.main_nav_menu{
+  position:relative;
+  transition:all 0.3s;
+}
+
+.nav_sub_menu{
+  width:160px;
+  background-color:#E9ECEF;
+  display:none;
+  padding:0px;
+  border-radius:5px;
+  z-index:100;
+  position:absolute;
+}
+
+.nav_sub_menu li{
+ display:block;
+ margin:0px;
+ padding:0px;
+}
+
+.nav_sub_menu li a{
+ display:block;
+ margin:0px;
+ padding:8px;
+ text-align:left;
+ text-transform:capitalize;
+ color:#343A40;
+ transition:all 0.1s;
+}
+.nav_sub_menu li a:hover{
+background-color:#343A40;
+ color:#E9ECEF;
+}
+.main_nav_menu:hover .nav_sub_menu{
+  display:block;
+}
+
+table{
+  background:#fff !important;
+}
+
+/* table td{
+ position: relative;
+} */
+
+.action_wapper{
+  visibility: hidden;
+  transition: all 0.03s ease-out;
+  width: 100px;
+  position: absolute;
+  top:-30px;
+  left: 0px;
+  display: block;
+  background-color: rgba(0, 0, 0, 0.514);
+  z-index: 1000;
+  text-align: center;
+}
+
+.action_wapper2{
+  visibility: hidden;
+  width: auto;
+  transition: all 0.03s ease-out;
+  display: block;
+}
+table tr:hover .action_wapper2{
+  visibility: visible;
+} 
+
+.action_wapper a{
+  display: inline-block;
+  padding: 0px;
+  margin: 0px;
+  width: 100%;
+  transition: all 0.03s;
+
+}
+.action_wapper a:hover{
+  background-color: #343A40;
+  color:#fff !important;
+}
+
+.table tr:hover .action_wapper{
+  visibility: visible;
+} 
+
+.driver_action_detail{
+  visibility: hidden;
+}
+
+.driver_td:hover .driver_action_detail{
+  visibility: visible;
+}
+
+.maintenance_action_detail{
+  visibility: hidden;
+}
+.status_td:hover .maintenance_action_detail{
+  visibility:visible;
+}
+
+.vehicle_row{
+  padding: 10px 0px;   
+}
+
+.vehicle_row.odd{
+  background-color:#eee !important;
+} 
+
+.vehicle_row.even{
+  background-color:#fff !important;
+} 
+
+.page_sub_menu{
+  margin: 10px auto;
+  float: right;
+}
+
+/* // sweetAtert2 custom css */
+
+.toasts-top-right{
+  right: 10px !important;
+   top: 10px !important;
+   z-index: 1040 !important;
+   width: 320px !important;
+}
+
+#nofifications{
+  height: 450px;
+  overflow-y:scroll;
+}
+
+.unread_notification{
+  background-color: #e2e1e1;
+}
+.read_notification{
+  background-color: #fff;
+}
+#mark-as-unread{
+  cursor: pointer;
+}
+.single-notification{
+  position: relative;
+  transition: all 0.2s;
+  }
+#nofifications .action-btns{
+  visibility: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+ 
+  z-index: 1000;
+  left: 0px;
+  text-align: center;
+  line-height: 40px;
+}
+
+.single-notification:hover .action-btns{
+  visibility:visible !important;
+  position:relative !important;
+}
+.single-notification .action-btns span:hover{
+text-decoration:underline !important;
+}
+
+.popElement {
+  position: absolute;
+  min-width: 200px;
+  max-width: 500px;
+  background:#343a40;
+  border: 1px solid #000;
+  z-index: 100000;
+
+}
+
+.vehicle_card img{
+  position: relative;
+  width: 100%;
+  height:100%;
+  max-height: 170px;
+  object-fit: contain;
+}
+
+.vehicle_card .vehicle_meta{
+  position: relative;
+  width: 100%;
+  bottom:0px;
+  background-color: #e2e1e1c2;
+  padding: 5px;
+}
+
+.vehicle_card .vehicle_meta span{
+  width: 100%;
+  display: block;
+  text-align: center;
+}
+
+.manage-thumbnail{
+  height:70px;
+  object-fit: cover;
+}
+
+
+.loading{
+    position: absolute;
+    left: 0px;
+    width: 100%;
+    background-image: url("../images/loading.gif");
+    top: 0px;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.shown{
+  transition: all 3s !important;
+}
+
+
+
+/* Bootstrap Custom css */
+
+.card-primary.card-outline{
+  border-top: 3px solid #343a40;
+}
+
+.card-primary:not(.card-outline)>.card-header{
+  background-color: #343a40 !important;
+}
+
+.card-primary.card-outline-tabs>.card-header a.active{
+  border-top: 3px solid #343a40;
+}
+
+.card-primary.card-outline-tabs>.card-header a{
+  color:  #343a40;
+}
+
+
+/* light box style */
+.imageLightBox{
+  position: fixed;
+  z-index: 9999;
+  top: 0px;
+  background: #000000a8;
+  width: 100%;
+  height: 100vh;
+  
+}
+.imageLightBox .imagewrapper{
+max-width: 600px;
+width: 100%;
+margin: 0px auto;
+position: absolute;
+top: 50%;
+left: 50%;
+-ms-transform: translate(-50%, -50%);
+transform: translate(-50%, -50%);
+background:white;
+
+}
+
+img{
+cursor: pointer;
+}
+
+.imageLightBox .imagewrapper img{
+width: 100%;
+}
+.imageLightBox .imageLightBoxclose{
+  color: white;
+  position: absolute;
+  top: 10px;
+  right: 25px;
+  font-size: 35px;
+  font-family: monospace;
+  font-weight: lighter;
+  cursor: pointer;
+}
+
+.api-form-preview{
+  width: 100%;
+  height: 100vh;
+  border: 1px solid #e2e4e7;
+}
+/* Message module */
+
+table .active{
+  background-color: #faebd7 !important;
+}
+.booking_modal_list{
+  list-style: none;
+  padding: 0px;
+  
+}
+ .booking_modal_list li{
+  margin-bottom: 5px;
+ }
+
+ .nav-pills .nav-link.active{
+  background-color: #e64d32;
+ }
+ /* select2 style  */
+ .select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #444;
+  line-height: 24px;
+}
+
+/* 
+#new-booking-update{
+  position:fixed;
+  top:20px;
+  left:50%;
+  z-index:10000;
+  background-color: #29a745;
+  color:#fff;
+  padding:8px 30px;
+  border-radius:10px;
+  box-shadow: 0px 0px  10px 0px #c4c4c45e;
+  animation-name: new-booking-update-anim;
+  animation-duration: 0.8s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:all 0.3s;
+
+}
+
+#new-booking-update:hover{
+  border:2px solid #fff;
+}
+
+@keyframes new-booking-update-anim {
+  from { box-shadow: 0px 0px  0px 0px #3d9970;}
+  to { box-shadow: 0px 0px  3px 2px #626161;}
+
+} */
+
+
+
+/* mobile responsive code */
+
+@media screen and (max-width: 991px) {
+  #main-menu{
+   width:100%; 
+    margin: 0px !important;
+  }
+  
+  .action_wapper2{
+    visibility: visible;
+  }
+
+#main-menu li{
+  margin:0px;
+}
+  #main-menu li a{
+     width:100%; 
+    margin-bottom:5px;
+    text-align: left !important;
+
+  }
+
+  #main-menu li ul{
+    position:relative; 
+     width:95%;
+     left: 5%;
+     border-radius: 0px;
+     
+    background-color:#fff;
+  }
+
+
+  .main_nav_menu:hover .nav_sub_menu {
+    display: none;
+  }
+
+  .table-scoller{
+    overflow:auto;
+  }
+    
+}
+
+.btn-success:hover{
+  background-color:#e54e30;
+}
+
+.user-navimg{
+  margin-top: -6px;
+  width: 45px;
+  height: 45px;
+}
+
+
+.select_status{
+  padding: 5px;
+  /* width: 100%; */
+  border: 0px;
+  background:transparent !important;
+  /* color: #e7e7e7; */
+}
+
+
+table tr{
+  cursor: pointer;
+}
